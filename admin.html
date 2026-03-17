@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebCraft Studio | Admin</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #121933;
+      --card: rgba(255,255,255,0.08);
+      --line: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: #b8c1ec;
+      --primary: #6d7cff;
+      --primary-2: #47d7ac;
+      --danger: #ff7d8b;
+      --warning: #ffcf6d;
+      --success: #47d7ac;
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+      --max: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(109,124,255,0.22), transparent 32%),
+        radial-gradient(circle at top right, rgba(71,215,172,0.16), transparent 24%),
+        linear-gradient(180deg, #0a0f1f, #0b1020 35%, #0d1224 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .glass {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(10,15,31,0.72);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      font-weight: 900;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #8c79ff);
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .btn.warning {
+      background: rgba(255,207,109,0.14);
+      border: 1px solid rgba(255,207,109,0.28);
+      color: #ffeab8;
+    }
+
+    .btn.success {
+      background: rgba(71,215,172,0.14);
+      border: 1px solid rgba(71,215,172,0.28);
+      color: #d6fff3;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    main { padding: 28px 0 60px; }
+
+    .hero {
+      display: flex;
+      justify-content: center;
+    }
+
+    .panel {
+      padding: 24px;
+      width: 100%;
+      max-width: 980px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px; }
+    h2 { margin-bottom: 10px; }
+    h3 { margin-bottom: 10px; }
+    p { color: var(--muted); line-height: 1.7; }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(109,124,255,0.16);
+      color: #dce3ff;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    form { display: grid; gap: 14px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(12,17,35,0.72);
+      color: var(--text);
+      outline: none;
+      font: inherit;
+    }
+
+    input::placeholder {
+      color: #93a0cf;
+    }
+
+    .status-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      display: none;
+      line-height: 1.6;
+    }
+
+    .status-box.show { display: block; }
+
+    .status-box.error {
+      background: rgba(255,125,139,0.12);
+      border: 1px solid rgba(255,125,139,0.28);
+      color: #ffdfe4;
+    }
+
+    .status-box.success {
+      background: rgba(71,215,172,0.12);
+      border: 1px solid rgba(71,215,172,0.32);
+      color: #d6fff3;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
+    }
+
+    .search-input {
+      flex: 1 1 280px;
+      min-width: 220px;
+    }
+
+    .filter-select {
+      flex: 0 0 180px;
+      min-width: 160px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .request-card {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .request-card.archived {
+      opacity: 0.9;
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .request-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .head-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .meta-item {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      word-break: break-word;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .badge.uj {
+      background: rgba(109,124,255,0.18);
+      color: #dfe4ff;
+    }
+
+    .badge.folyamatban {
+      background: rgba(255,207,109,0.16);
+      color: #ffeab8;
+    }
+
+    .badge.lezart {
+      background: rgba(71,215,172,0.16);
+      color: #d6fff3;
+    }
+
+    .badge.archived {
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+      min-width: auto;
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,0.14);
+      border-radius: 20px;
+    }
+
+    .small {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .container {
+        width: min(var(--max), calc(100% - 20px));
+      }
+
+      .panel {
+        padding: 18px;
+      }
+
+      .toolbar-right {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-select,
+      .search-input,
+      .toolbar-right .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-badge">W</div>
+        <span>WebCraft Studio Admin</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn secondary" href="index.html">Vissza a weboldalra</a>
+        <button class="btn secondary hidden" id="logoutBtn" type="button">Kilépés</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <section class="glass panel" id="loginPanel">
+        <div class="eyebrow">Belépés</div>
+        <h1>Admin felület</h1>
+        <p>Itt fogod látni a beérkező ajánlatkéréseket. Belépés után a rendszer lekéri a <strong>contact_requests</strong> táblából az adatokat.</p>
+
+        <form id="loginForm">
+          <input type="email" id="adminEmail" placeholder="Admin email cím" required />
+          <input type="password" id="adminPassword" placeholder="Jelszó" required />
+          <button class="btn" type="submit" id="loginBtn">Belépés</button>
+        </form>
+
+        <div id="loginStatus" class="status-box"></div>
+      </section>
+
+      <section class="glass panel hidden" id="dashboardPanel">
+        <div class="toolbar">
+          <div>
+            <div class="eyebrow">Kapcsolati űrlapok</div>
+            <h2>Beérkezett ajánlatkérések</h2>
+            <p class="small">Itt látod az összes eddigi megkeresést. Kereshetsz bennük, archiválhatod őket, majd később vissza is állíthatod.</p>
+          </div>
+
+          <div class="toolbar-right">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Keresés név, email, telefon, üzenet alapján..."
+            />
+
+            <select id="archiveFilter" class="filter-select">
+              <option value="active">Aktív</option>
+              <option value="archived">Archivált</option>
+              <option value="all">Összes</option>
+            </select>
+
+            <button class="btn secondary" id="refreshBtn" type="button">Frissítés</button>
+          </div>
+        </div>
+
+        <div id="requestsContainer" class="cards"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://eycbunhpmqhvnpyxaeuh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_aN9eIv_JrRhiC4ciZ_jrrg_IHIqjDu5';
+
+    const loginPanel = document.getElementById('loginPanel');
+    const dashboardPanel = document.getElementById('dashboardPanel');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginStatus = document.getElementById('loginStatus');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const requestsContainer = document.getElementById('requestsContainer');
+    const searchInput = document.getElementById('searchInput');
+    const archiveFilter = document.getElementById('archiveFilter');
+
+    function setStatus(el, message, type) {
+      el.textContent = message;
+      el.className = `status-box show ${type}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function isConfigured() {
+      return !SUPABASE_URL.includes('IDE_IRD') && !SUPABASE_ANON_KEY.includes('IDE_IRD');
+    }
+
+    if (!isConfigured()) {
+      setStatus(loginStatus, 'Még nem állítottad be a Supabase kulcsokat az admin.html fájlban.', 'error');
+    }
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function formatDate(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleString('hu-HU');
+    }
+
+    function renderRequests(items) {
+      if (!items.length) {
+        const filterValue = archiveFilter ? archiveFilter.value : 'active';
+        const emptyText =
+          filterValue === 'archived'
+            ? 'Nincs archivált ajánlatkérés.'
+            : filterValue === 'all'
+              ? 'Még nincs egyetlen beérkezett ajánlatkérés sem.'
+              : 'Nincs aktív ajánlatkérés.';
+        requestsContainer.innerHTML = `<div class="empty">${emptyText}</div>`;
+        return;
+      }
+
+      requestsContainer.innerHTML = items.map(item => `
+        <article class="request-card ${item.archived ? 'archived' : ''}">
+          <div class="request-head">
+            <div>
+              <h3>${escapeHtml(item.name || 'Névtelen érdeklődő')}</h3>
+              <div class="small">Beküldve: ${escapeHtml(formatDate(item.created_at))}</div>
+            </div>
+
+            <div class="head-badges">
+              <span class="badge ${escapeHtml(item.status || 'uj')}">${escapeHtml(item.status || 'uj')}</span>
+              ${item.archived ? '<span class="badge archived">archivált</span>' : ''}
+            </div>
+          </div>
+
+          <p>${escapeHtml(item.message || 'Nincs üzenet megadva.')}</p>
+
+          <div class="meta">
+            <div class="meta-item"><strong>Email</strong><br>${escapeHtml(item.email || '—')}</div>
+            <div class="meta-item"><strong>Telefon</strong><br>${escapeHtml(item.phone || '—')}</div>
+            <div class="meta-item"><strong>Weboldal típusa</strong><br>${escapeHtml(item.website_type || '—')}</div>
+            <div class="meta-item"><strong>Azonosító</strong><br>${escapeHtml(item.id)}</div>
+          </div>
+
+          <div class="request-actions">
+            <button class="btn secondary" onclick="updateRequestStatus('${item.id}', 'uj')">Új</button>
+            <button class="btn secondary" onclick="updateRequestStatus('${item.id}', 'folyamatban')">Folyamatban</button>
+            <button class="btn secondary" onclick="updateRequestStatus('${item.id}', 'lezart')">Lezárt</button>
+            ${
+              item.archived
+                ? `<button class="btn success" onclick="restoreRequest('${item.id}')">Visszaállítás</button>`
+                : `<button class="btn warning" onclick="archiveRequest('${item.id}')">Archiválás</button>`
+            }
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadRequests() {
+      const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const filterValue = archiveFilter ? archiveFilter.value : 'active';
+
+      const { data, error } = await supabaseClient
+        .from('contact_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        requestsContainer.innerHTML = `<div class="empty">Hiba az adatok betöltésekor: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      let filtered = data || [];
+
+      if (filterValue === 'active') {
+        filtered = filtered.filter(item => !item.archived);
+      } else if (filterValue === 'archived') {
+        filtered = filtered.filter(item => item.archived);
+      }
+
+      if (searchTerm) {
+        filtered = filtered.filter(item => {
+          return [
+            item.name,
+            item.email,
+            item.phone,
+            item.website_type,
+            item.message,
+            item.status
+          ]
+            .map(v => String(v || '').toLowerCase())
+            .some(v => v.includes(searchTerm));
+        });
+      }
+
+      renderRequests(filtered);
+    }
+
+    window.updateRequestStatus = async function(id, status) {
+      const { error } = await supabaseClient
+        .from('contact_requests')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) {
+        alert(`Nem sikerült a státusz módosítása: ${error.message}`);
+        return;
+      }
+
+      await loadRequests();
+    };
+
+    window.archiveRequest = async function(id) {
+      const { error } = await supabaseClient
+        .from('contact_requests')
+        .update({ archived: true })
+        .eq('id', id);
+
+      if (error) {
+        alert(`Nem sikerült az archiválás: ${error.message}`);
+        return;
+      }
+
+      await loadRequests();
+    };
+
+    window.restoreRequest = async function(id) {
+      const { error } = await supabaseClient
+        .from('contact_requests')
+        .update({ archived: false })
+        .eq('id', id);
+
+      if (error) {
+        alert(`Nem sikerült a visszaállítás: ${error.message}`);
+        return;
+      }
+
+      await loadRequests();
+    };
+
+    async function checkSession() {
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data.session;
+
+      if (session) {
+        loginPanel.classList.add('hidden');
+        dashboardPanel.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        await loadRequests();
+      } else {
+        loginPanel.classList.remove('hidden');
+        dashboardPanel.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+      }
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!isConfigured()) {
+        setStatus(loginStatus, 'Előbb állítsd be a Supabase URL-t és anon kulcsot.', 'error');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Belépés...';
+
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        setStatus(loginStatus, `Sikertelen belépés: ${error.message}`, 'error');
+      } else {
+        setStatus(loginStatus, 'Sikeres belépés.', 'success');
+        await checkSession();
+      }
+
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Belépés';
+    });
+
+    refreshBtn.addEventListener('click', loadRequests);
+
+    if (searchInput) {
+      searchInput.addEventListener('input', loadRequests);
+    }
+
+    if (archiveFilter) {
+      archiveFilter.addEventListener('change', loadRequests);
+    }
+
+    logoutBtn.addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      await checkSession();
+    });
+
+    supabaseClient.auth.onAuthStateChange(() => {
+      checkSession();
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
